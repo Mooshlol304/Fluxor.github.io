@@ -41,6 +41,7 @@
             opacity: 0;
             transform: scale(0);
             transition: opacity 0.3s ease, transform 0.3s ease;
+            cursor: pointer; /* Show a pointer cursor to indicate the node is clickable */
         }
         .node.show {
             opacity: 1;
@@ -93,6 +94,7 @@
         const container = document.getElementById('flowchart-container');
         const addNodeBtn = document.querySelector('.add-node-btn');
         const nodeInput = document.getElementById('node-input');
+        let currentNode = null;
 
         function createNode(x, y, text = 'Node') {
             const node = document.createElement('div');
@@ -111,6 +113,7 @@
             // Handle node click for renaming
             node.addEventListener('click', (e) => {
                 if (e.detail === 1) { // Single click
+                    currentNode = node; // Set the current node being edited
                     nodeInput.value = node.textContent;
                     nodeInput.style.left = `${node.offsetLeft}px`;
                     nodeInput.style.top = `${node.offsetTop}px`;
@@ -121,9 +124,10 @@
             });
 
             nodeInput.addEventListener('blur', () => {
-                if (node) {
-                    node.textContent = nodeInput.value;
+                if (currentNode) {
+                    currentNode.textContent = nodeInput.value;
                     nodeInput.style.display = 'none';
+                    currentNode = null; // Clear the current node
                 }
             });
 
