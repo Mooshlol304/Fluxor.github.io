@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting</title>
+    <link rel="icon" href="Favicon.ico" type="image/x-icon"> <!-- Favicon -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            text-align: center;
+            color: white;
+        }
+        .message {
+            font-size: 2em;
+            margin-bottom: 20px; /* Adjusts space between text and gear */
+        }
+        .gear {
+            width: 100px; /* Adjust the size as needed */
+            height: 100px;
+            background-image: url('Gear.png'); /* Replace with the correct path to your Gear.png */
+            background-size: cover;
+            animation: rotate 2s linear infinite;
+            margin-top: 30px; /* Adjusts space between text and gear */
+        }
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="message">Redirecting...</div>
+    <div class="gear"></div>
+    <script>
+        // Redirect to List.html after 2 seconds
+        setTimeout(function() {
+            window.location.href = 'List.html';
+        }, 2000); // 2000 milliseconds = 2 seconds
+    </script>
+</body>
+</html>

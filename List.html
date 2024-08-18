@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluxor Page</title>
+    <link rel="icon" href="Favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, blue, cyan, #e0ffff);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .square {
+            width: 90%;
+            height: 70%;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: row;
+            position: relative;
+        }
+
+        .square div {
+            flex: 1;
+            border-right: 3px solid grey;
+            position: relative;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .square div:last-child {
+            border-right: none;
+        }
+
+        .header-input {
+            font-size: 1.5em;
+            color: black;
+            font-weight: bold;
+            text-align: center;
+            border: none;
+            background: transparent;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            margin: 0;
+            outline: none;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .add-card-button {
+            width: 50px;
+            height: 50px;
+            background-color: purple;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            color: white;
+            font-size: 1.5em;
+            position: absolute;
+            top: 80px; /* Moved further down */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .add-card-button::before {
+            content: "+";
+        }
+
+        .card-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 100px; /* Adjusted space for the button */
+            padding-bottom: 60px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            padding: 20px;
+            border: none;
+            box-shadow: none;
+            min-height: 100px;
+            max-height: 200px; /* Adjust as needed */
+            resize: vertical; /* Allow vertical resizing */
+            overflow: auto; /* Add scroll if content exceeds */
+            box-sizing: border-box;
+            opacity: 0; /* Start invisible */
+            transform: translateY(20px); /* Start below */
+            animation: fadeInUp 0.5s forwards; /* Apply animation */
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="square">
+        <!-- First Part -->
+        <div>
+            <input type="text" class="header-input" placeholder="Section Title" value="Done">
+            <button class="add-card-button" data-target="done-card-container"></button>
+            <div class="card-container" id="done-card-container">
+                <div class="card">
+                    <textarea placeholder="Enter task..."></textarea>
+                </div>
+                <!-- New cards will be appended here -->
+            </div>
+        </div>
+
+        <!-- Second Part -->
+        <div>
+            <input type="text" class="header-input" placeholder="Section Title" value="Doing">
+            <button class="add-card-button" data-target="doing-card-container"></button>
+            <div class="card-container" id="doing-card-container">
+                <div class="card">
+                    <textarea placeholder="Enter task..."></textarea>
+                </div>
+                <!-- New cards will be appended here -->
+            </div>
+        </div>
+
+        <!-- Third Part -->
+        <div>
+            <input type="text" class="header-input" placeholder="Section Title" value="To Do">
+            <button class="add-card-button" data-target="todo-card-container"></button>
+            <div class="card-container" id="todo-card-container">
+                <div class="card">
+                    <textarea placeholder="Enter task..."></textarea>
+                </div>
+                <!-- New cards will be appended here -->
+            </div>
+        </div>
+
+        <!-- Fourth Part -->
+        <div>
+            <input type="text" class="header-input" placeholder="Section Title" value="Completed">
+            <button class="add-card-button" data-target="completed-card-container"></button>
+            <div class="card-container" id="completed-card-container">
+                <div class="card">
+                    <textarea placeholder="Enter task..."></textarea>
+                </div>
+                <!-- New cards will be appended here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add event listeners to all "Add Card" buttons
+        document.querySelectorAll('.add-card-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Get the target card container from the data-target attribute
+                const targetId = this.getAttribute('data-target');
+                const cardContainer = document.getElementById(targetId);
+                // Create a new card element
+                const newCard = document.createElement('div');
+                newCard.classList.add('card');
+                newCard.innerHTML = '<textarea placeholder="Enter task..."></textarea>';
+                // Append the new card to the card container
+                cardContainer.appendChild(newCard);
+            });
+        });
+    </script>
+</body>
+</html>

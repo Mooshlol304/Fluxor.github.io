@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluxChart</title>
+    <link rel="icon" href="Favicon.ico" type="image/x-icon"> <!-- Favicon -->
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(to right, blue, cyan, #e0ffff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #flowchart-container {
+            position: relative;
+            width: 80vw;
+            height: 80vh;
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .node {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            background: #f9f9f9;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 50px;
+            cursor: move;
+            font-family: Arial, sans-serif;
+            font-smooth: always;
+            opacity: 0;
+            transform: scale(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .node.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .node.fade-out {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .add-node-btn {
+            position: absolute;
+            background: purple;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            font-size: 30px;
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+        .add-node-btn:active {
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+    <div id="flowchart-container">
+        <button class="add-node-btn">+</button>
+    </div>
+
+    <script>
+        const container = document.getElementById('flowchart-container');
+        const addNodeBtn = document.querySelector('.add-node-btn');
+
+        function createNode(x, y, text = 'Node') {
+            const node = document.createElement('div');
+            node.className = 'node';
+            node.textContent = text;
+            node.style.left = `${x}px`;
+            node.style.top = `${y}px`;
+
+            container.appendChild(node);
+
+            // Trigger animation
+            requestAnimationFrame(() => {
+                node.classList.add('show');
+            });
+
+            let offsetX, offsetY, isDragging = false, isClicked = false;
+
+            node.addEventListener('mousedown', (e) => {
+                if (e.button === 2) return; // Ignore right-click during dragging
+                offsetX = e.clientX - node.getBoundingClientRect().left;
+                offsetY = e.clientY - node.getBoundingClientRect().top;
+                isDragging = false;
+                isClicked = true;
+                node.style.transition = 'none'; // Disable transition during dragging
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isClicked) {
+                    isDragging = true;
+                    const rect = container.getBoundingClientRect();
+                    node.style.left = `${e.clientX - rect.left - offsetX}px`;
+                    node.style.top = `${e.clientY - rect.top - offsetY}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                } else if (isClicked) {
+                    // Trigger rename prompt only if it was a click
+                    const newText = prompt('Enter new name for this node:', node.textContent);
+                    if (newText !== null) {
+                        node.textContent = newText;
+                    }
+                }
+                isClicked = false;
+                node.style.transition = 'transform 0.3s ease'; // Re-enable transition
+            });
+
+            // Handle right-click for deletion
+            node.addEventListener('contextmenu', (e) => {
+                e.preventDefault(); // Prevent the context menu from appearing
+                node.classList.add('fade-out');
+                setTimeout(() => {
+                    node.remove();
+                }, 300); // Match the animation duration
+            });
+
+            return node;
+        }
+
+        addNodeBtn.addEventListener('click', () => {
+            const x = Math.random() * (container.clientWidth - 100);
+            const y = Math.random() * (container.clientHeight - 50);
+            createNode(x, y);
+        });
+
+        // Center the button in the container
+        function centerButton() {
+            addNodeBtn.style.left = `calc(50% - ${addNodeBtn.offsetWidth / 2}px)`;
+            addNodeBtn.style.top = `calc(50% - ${addNodeBtn.offsetHeight / 2}px)`;
+        }
+
+        centerButton();
+        window.addEventListener('resize', centerButton); // Re-center on window resize
+    </script>
+</body>
+</html>
