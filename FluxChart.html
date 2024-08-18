@@ -97,39 +97,57 @@
                 node.classList.add('show');
             });
 
-            let offsetX, offsetY, isDragging = false, isClicked = false;
+            let offsetX, offsetY, isDragging = false;
 
             node.addEventListener('mousedown', (e) => {
                 if (e.button === 2) return; // Ignore right-click during dragging
-                offsetX = e.clientX - node.getBoundingClientRect().left;
-                offsetY = e.clientY - node.getBoundingClientRect().top;
-                isDragging = false;
-                isClicked = true;
+
+                // Calculate offset relative to the node's position
+                const rect = node.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                isDragging = true;
                 node.style.transition = 'none'; // Disable transition during dragging
             });
 
-            document.addEventListener('mousemove', (e) => {
-                if (isClicked) {
-                    isDragging = true;
-                    const rect = container.getBoundingClientRect();
-                    node.style.left = `${e.clientX - rect.left - offsetX}px`;
-                    node.style.top = `${e.clientY - rect.top - offsetY}px`;
-                }
-            });
-
-            document.addEventListener('mouseup', () => {
+            function onMouseMove(e) {
                 if (isDragging) {
-                    isDragging = false;
-                } else if (isClicked) {
-                    // Trigger rename prompt only if it was a click
-                    const newText = prompt('Enter new name for this node:', node.textContent);
-                    if (newText !== null) {
-                        node.textContent = newText;
+                    const rect = container.getBoundingClientRect();
+                    const newX = e.clientX - rect.left - offsetX;
+                    const newY = e.clientY - rect.top - offsetY;
+
+                    // Ensure the node stays within the container bounds
+                    const maxX = container.clientWidth - node.offsetWidth;
+                    const maxY = container.clientHeight - node.offsetHeight;
+
+                    if (newX < 0) {
+                        node.style.left = '0px';
+                    } else if (newX > maxX) {
+                        node.style.left = `${maxX}px`;
+                    } else {
+                        node.style.left = `${newX}px`;
+                    }
+
+                    if (newY < 0) {
+                        node.style.top = '0px';
+                    } else if (newY > maxY) {
+                        node.style.top = `${maxY}px`;
+                    } else {
+                        node.style.top = `${newY}px`;
                     }
                 }
-                isClicked = false;
-                node.style.transition = 'transform 0.3s ease'; // Re-enable transition
-            });
+            }
+
+            function onMouseUp() {
+                if (isDragging) {
+                    isDragging = false;
+                    node.style.transition = 'transform 0.3s ease'; // Re-enable transition
+                }
+            }
+
+            // Add event listeners
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
 
             // Handle right-click for deletion
             node.addEventListener('contextmenu', (e) => {
