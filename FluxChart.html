@@ -36,7 +36,6 @@
             border-radius: 5px;
             text-align: center;
             line-height: 50px;
-            cursor: move;
             font-family: Arial, sans-serif;
             font-smooth: always;
             opacity: 0;
@@ -94,8 +93,6 @@
         const container = document.getElementById('flowchart-container');
         const addNodeBtn = document.querySelector('.add-node-btn');
         const nodeInput = document.getElementById('node-input');
-        let currentNode = null;
-        let isDragging = false;
 
         function createNode(x, y, text = 'Node') {
             const node = document.createElement('div');
@@ -111,104 +108,68 @@
                 node.classList.add('show');
             });
 
-            let offsetX, offsetY;
-
-            function onMouseDown(e) {
-                if (e.button === 2) return; // Ignore right-click during dragging
-
-                // Calculate offset relative to the node's position
-                const rect = node.getBoundingClientRect();
-                offsetX = e.clientX - rect.left;
-                offsetY = e.clientY - rect.top;
-                isDragging = true;
-                node.style.transition = 'none'; // Disable transition during dragging
-
-                // Set the current node to be dragged
-                currentNode = node;
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-            }
-
-            function onMouseMove(e) {
-                if (isDragging && currentNode === node) {
-                    const rect = container.getBoundingClientRect();
-                    const newX = e.clientX - rect.left - offsetX;
-                    const newY = e.clientY - rect.top - offsetY;
-
-                    // Ensure the node stays within the container bounds
-                    const maxX = container.clientWidth - node.offsetWidth;
-                    const maxY = container.clientHeight - node.offsetHeight;
-
-                    if (newX < 0) {
-                        node.style.left = '0px';
-                    } else if (newX > maxX) {
-                        node.style.left = `${maxX}px`;
-                    } else {
-                        node.style.left = `${newX}px`;
-                    }
-
-                    if (newY < 0) {
-                        node.style.top = '0px';
-                    } else if (newY > maxY) {
-                        node.style.top = `${maxY}px`;
-                    } else {
-                        node.style.top = `${newY}px`;
-                    }
-                }
-            }
-
-            function onMouseUp() {
-                if (isDragging) {
-                    isDragging = false;
-                    node.style.transition = 'transform 0.3s ease'; // Re-enable transition
-                }
-                currentNode = null;
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-            }
-
-            // Add event listeners
-            node.addEventListener('mousedown', onMouseDown);
-
-            // Handle right-click for deletion
-            node.addEventListener('contextmenu', (e) => {
-                e.preventDefault(); // Prevent the context menu from appearing
-                node.classList.add('fade-out');
-                setTimeout(() => {
-                    node.remove();
-                }, 300); // Match the animation duration
-            });
-
             // Handle node click for renaming
             node.addEventListener('click', (e) => {
-                if (isDragging) return; // Ignore clicks if dragging
-
-                if (currentNode) {
-                    currentNode.classList.remove('editing');
+                if (e.detail === 1) { // Single click
+                    nodeInput.value = node.textContent;
+                    nodeInput.style.left = `${node.offsetLeft}px`;
+                    nodeInput.style.top = `${node.offsetTop}px`;
+                    nodeInput.style.width = `${node.offsetWidth}px`;
+                    nodeInput.style.display = 'block';
+                    nodeInput.focus();
                 }
-                currentNode = node;
-                nodeInput.value = node.textContent;
-                nodeInput.style.left = `${node.offsetLeft}px`;
-                nodeInput.style.top = `${node.offsetTop}px`;
-                nodeInput.style.width = `${node.offsetWidth}px`;
-                nodeInput.style.display = 'block';
-                nodeInput.focus();
             });
 
             nodeInput.addEventListener('blur', () => {
-                if (currentNode) {
-                    currentNode.textContent = nodeInput.value;
+                if (node) {
+                    node.textContent = nodeInput.value;
                     nodeInput.style.display = 'none';
-                    currentNode = null;
                 }
             });
 
             return node;
         }
 
+        function isOverlapping(newX, newY, newWidth, newHeight) {
+            const nodes = document.querySelectorAll('.node');
+            for (const node of nodes) {
+                const rect = node.getBoundingClientRect();
+                const existingX = rect.left - container.getBoundingClientRect().left;
+                const existingY = rect.top - container.getBoundingClientRect().top;
+                const existingWidth = node.offsetWidth;
+                const existingHeight = node.offsetHeight;
+
+                if (!(newX + newWidth < existingX ||
+                      newX > existingX + existingWidth ||
+                      newY + newHeight < existingY ||
+                      newY > existingY + existingHeight)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function getValidPosition(width, height) {
+            let x, y, attempts = 0;
+            const maxAttempts = 100;
+
+            do {
+                x = Math.random() * (container.clientWidth - width);
+                y = Math.random() * (container.clientHeight - height);
+                attempts++;
+            } while (isOverlapping(x, y, width, height) && attempts < maxAttempts);
+
+            if (attempts >= maxAttempts) {
+                console.warn('Unable to find a non-overlapping position for the new node.');
+                x = 0;
+                y = 0;
+            }
+
+            return { x, y };
+        }
+
         addNodeBtn.addEventListener('click', () => {
-            const x = Math.random() * (container.clientWidth - 100);
-            const y = Math.random() * (container.clientHeight - 50);
+            const { x, y } = getValidPosition(100, 50);
             createNode(x, y);
         });
 
