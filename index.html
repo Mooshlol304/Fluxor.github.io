@@ -178,6 +178,10 @@
             color: white; /* Text color */
             font-size: 0.9em; /* Adjust font size if needed */
         }
+        .bottom-bar a {
+            color: white;
+            text-decoration: none; /* Removes underline from links */
+        }
     </style>
 </head>
 <body>
@@ -212,6 +216,9 @@
                 <div class="create-new-text">Create New Flowchart</div>
             </div>
         </div>
+        <div class="bottom-bar">
+            <a href="#" id="downloadText">Empowering Developers to leave a better digital footprint</a>
+        </div>
     </div>
     <!-- Popup and overlay background -->
     <div class="overlay-background" id="overlayBackground"></div>
@@ -233,7 +240,13 @@
             document.getElementById('popup').style.display = 'none';
             document.getElementById('overlayBackground').style.display = 'none';
         }
+
+        document.getElementById('downloadText').addEventListener('click', function() {
+            const link = document.createElement('a');
+            link.href = 'easteregg2.txt';
+            link.download = 'easteregg2.txt';
+            link.click();
+        });
     </script>
-    <div class="bottom-bar">Empowering Developers to leave a better digital footprint</div>
 </body>
 </html>
