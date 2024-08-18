@@ -113,7 +113,7 @@
 
             let offsetX, offsetY;
 
-            node.addEventListener('mousedown', (e) => {
+            function onMouseDown(e) {
                 if (e.button === 2) return; // Ignore right-click during dragging
 
                 // Calculate offset relative to the node's position
@@ -122,10 +122,15 @@
                 offsetY = e.clientY - rect.top;
                 isDragging = true;
                 node.style.transition = 'none'; // Disable transition during dragging
-            });
+
+                // Set the current node to be dragged
+                currentNode = node;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            }
 
             function onMouseMove(e) {
-                if (isDragging) {
+                if (isDragging && currentNode === node) {
                     const rect = container.getBoundingClientRect();
                     const newX = e.clientX - rect.left - offsetX;
                     const newY = e.clientY - rect.top - offsetY;
@@ -157,11 +162,13 @@
                     isDragging = false;
                     node.style.transition = 'transform 0.3s ease'; // Re-enable transition
                 }
+                currentNode = null;
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
             }
 
             // Add event listeners
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+            node.addEventListener('mousedown', onMouseDown);
 
             // Handle right-click for deletion
             node.addEventListener('contextmenu', (e) => {
