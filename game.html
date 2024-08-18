@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Embedded Game</title>
+    <title>Fluxor Random Game</title>
+    <link rel="icon" href="Favicon.ico" type="image/x-icon"> <!-- Favicon -->
     <style>
         body {
             margin: 0;
@@ -12,6 +13,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
         }
         .container {
             text-align: center;
@@ -21,11 +23,30 @@
             width: 800px; /* Adjust size as needed */
             height: 600px; /* Adjust size as needed */
         }
+        .download-text {
+            color: white;
+            cursor: pointer;
+            font-size: 2em; /* Adjust size as needed */
+            margin-bottom: 20px;
+            text-decoration: none; /* Remove underline */
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <span class="download-text" onclick="downloadFile()">Easter Egg Game</span>
         <script src="https://cdn.htmlgames.com/embed.js?game=TrafficControl&amp;bgcolor=white"></script>
     </div>
+
+    <script>
+        function downloadFile() {
+            const link = document.createElement('a');
+            link.href = 'readmelo.txt'; // Path to the file
+            link.download = 'readmelo.txt'; // File name for download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
 </body>
 </html>
