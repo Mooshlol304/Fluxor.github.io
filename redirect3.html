@@ -20,7 +20,11 @@
         }
         .message {
             font-size: 2em;
-            margin-bottom: 20px; /* Adjusts space between text and gear */
+            margin-bottom: 10px; /* Adjusts space between text and next element */
+        }
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px; /* Adjusts space between subtitle and gear */
         }
         .gear {
             width: 100px; /* Adjust the size as needed */
@@ -28,7 +32,6 @@
             background-image: url('Gear.png'); /* Replace with the correct path to your Gear.png */
             background-size: cover;
             animation: rotate 2s linear infinite;
-            margin-top: 30px; /* Adjusts space between text and gear */
         }
         @keyframes rotate {
             from {
@@ -42,6 +45,7 @@
 </head>
 <body>
     <div class="message">Redirecting to Fluxchart...</div>
+    <div class="subtitle">Simplify the Flow, Amplify Productivity</div>
     <div class="gear"></div>
     <script>
         setTimeout(function() {
