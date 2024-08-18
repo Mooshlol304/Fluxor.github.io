@@ -72,16 +72,30 @@
         .add-node-btn:active {
             transform: scale(0.9);
         }
+        .node-input {
+            position: absolute;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            padding: 2px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            z-index: 20;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div id="flowchart-container">
         <button class="add-node-btn">+</button>
+        <input id="node-input" class="node-input" type="text" />
     </div>
 
     <script>
         const container = document.getElementById('flowchart-container');
         const addNodeBtn = document.querySelector('.add-node-btn');
+        const nodeInput = document.getElementById('node-input');
+        let currentNode = null;
+        let isDragging = false;
 
         function createNode(x, y, text = 'Node') {
             const node = document.createElement('div');
@@ -97,7 +111,7 @@
                 node.classList.add('show');
             });
 
-            let offsetX, offsetY, isDragging = false;
+            let offsetX, offsetY;
 
             node.addEventListener('mousedown', (e) => {
                 if (e.button === 2) return; // Ignore right-click during dragging
@@ -156,6 +170,30 @@
                 setTimeout(() => {
                     node.remove();
                 }, 300); // Match the animation duration
+            });
+
+            // Handle node click for renaming
+            node.addEventListener('click', (e) => {
+                if (isDragging) return; // Ignore clicks if dragging
+
+                if (currentNode) {
+                    currentNode.classList.remove('editing');
+                }
+                currentNode = node;
+                nodeInput.value = node.textContent;
+                nodeInput.style.left = `${node.offsetLeft}px`;
+                nodeInput.style.top = `${node.offsetTop}px`;
+                nodeInput.style.width = `${node.offsetWidth}px`;
+                nodeInput.style.display = 'block';
+                nodeInput.focus();
+            });
+
+            nodeInput.addEventListener('blur', () => {
+                if (currentNode) {
+                    currentNode.textContent = nodeInput.value;
+                    nodeInput.style.display = 'none';
+                    currentNode = null;
+                }
             });
 
             return node;
